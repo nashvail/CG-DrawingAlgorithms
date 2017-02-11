@@ -5,8 +5,8 @@ let Screen = {
   numRows: 0,
   numCols: 0,
   pixelColor: '#222',
-  pixelDim: 10,
-  pixelSeparation: 2,
+  pixelDim: 33,
+  pixelSeparation: 3,
   create(width, height) {
     let obj = Object.create(this);
     obj.width = width;
@@ -28,6 +28,13 @@ let Screen = {
     }
   },
 
+  redraw(context) {
+    this.draw(context);
+    for (let i = 0; i < this.pixels.length; i++) {
+      this.pixels[i].color = this.pixelColor;
+    }
+  },
+
   _populatePixels() {
     let FACTOR = this.pixelDim + this.pixelSeparation;
 
@@ -44,7 +51,7 @@ let Screen = {
   },
 
   _isInBounds(x, y) {
-    return (x >= 0 && x < this.numCols) && (y >= 0 && y < this.numRows);
+    return (x >= 0 && x < this.numRows) && (y >= 0 && y < this.numCols);
   }
 };
 

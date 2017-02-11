@@ -29,8 +29,8 @@ let Screen = {
   numRows: 0,
   numCols: 0,
   pixelColor: '#222',
-  pixelDim: 10,
-  pixelSeparation: 2,
+  pixelDim: 33,
+  pixelSeparation: 3,
   create(width, height) {
     let obj = Object.create(this);
     obj.width = width;
@@ -52,6 +52,13 @@ let Screen = {
     }
   },
 
+  redraw(context) {
+    this.draw(context);
+    for (let i = 0; i < this.pixels.length; i++) {
+      this.pixels[i].color = this.pixelColor;
+    }
+  },
+
   _populatePixels() {
     let FACTOR = this.pixelDim + this.pixelSeparation;
 
@@ -68,7 +75,7 @@ let Screen = {
   },
 
   _isInBounds(x, y) {
-    return (x >= 0 && x < this.numCols) && (y >= 0 && y < this.numRows);
+    return (x >= 0 && x < this.numRows) && (y >= 0 && y < this.numCols);
   }
 };
 
@@ -79,19 +86,37 @@ Object.getOwnPropertyNames(Math).map(function(p) {
 
 let canvas = document.getElementById('canvas-screen');
 let context = canvas.getContext('2d');
+let overlayCanvas = document.getElementById('canvas-overlay');
+let overlayContext = overlayCanvas.getContext('2d');
 let width = canvas.width = window.innerWidth;
 let height = canvas.height = window.innerHeight;
- // 5 7 4 5 
- // 5 4
+
 const BG_COLOR = '#101010';
 const s = Screen.create(width, height);
 
-lineBres(0, 0, 32, 18);
-lineDDA(5, 0, 32, 18);
+let screenFactor = s.pixelDim + s.pixelSeparation;
+let p1 = {x: 0, y: 0};
+let p2 = {x: 1, y: 1};
 
+console.log(s.numRows);
+console.log(s.numCols);
+
+document.addEventListener('mousemove', function(event) {
+  p2.x = floor(event.clientX / screenFactor);
+  p2.y = floor(event.clientY / screenFactor);
+});
+
+function update() {
+  context.clearRect(0, 0, width, height);
+
+  lineDDA(p1.x, p1.y, p2.x, p2.y);
+  s.redraw(context);
+
+  requestAnimationFrame(update);
+}
 
 document.getElementsByTagName('body')[0].setAttribute('bgcolor', BG_COLOR);
-s.draw(context);
+update();
 
 function lineDDA(x1, y1, x2, y2) {
   let dx = x2 - x1,
@@ -108,37 +133,6 @@ function lineDDA(x1, y1, x2, y2) {
     x += xInc;
     y += yInc;
     s.light(round(x), round(y));
-  }
-}
-
-function lineBres(x1, y1, x2, y2) {
-  let dx, dy, d, de, dne;
-  let x, y;
-
-  dx = x2 - x1;
-  dy = y2 - y1;
-  x = x1;
-  y = y1;
-
-  if(dx < dy) {
-    let t = dx;
-    dx = dy;
-    dy = t;
-  } 
-  d = 2 * dy - dx;
-  de = 2 * dy;
-  dne = 2 * (dy - dx);
-
-  s.light(round(x), round(y), 'blue');
-  while(x < x2) {
-    if(d <= 0) {
-      d += de;
-    } else {
-      d += dne;
-      y += 1;
-    }
-    x += 1;
-    s.light(round(x), round(y), 'blue');
   }
 }
 

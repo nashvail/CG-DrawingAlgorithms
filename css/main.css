@@ -1,9 +1,11 @@
+/* line 1, ../sass/main.scss */
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
 }
 
+/* line 7, ../sass/main.scss */
 #canvas-overlay {
   position: absolute;
   top: 0;
