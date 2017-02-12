@@ -5,8 +5,8 @@ let Screen = {
   numRows: 0,
   numCols: 0,
   pixelColor: '#222',
-  pixelDim: 33,
-  pixelSeparation: 3,
+  pixelDim: 10,
+  pixelSeparation: 1,
   create(width, height) {
     let obj = Object.create(this);
     obj.width = width;
@@ -15,9 +15,9 @@ let Screen = {
     return obj;
   },
 
-  light(x, y, color = 'yellow') {
+  lightPixel(x, y, color = 'yellow') {
     if(this._isInBounds(x, y)) {
-      let index = this.numCols * x + y;
+      let index = Math.round(this.numCols * x + y);
       this.pixels[index].color = color;
     }
   },
