@@ -99,6 +99,8 @@ function update() {
   circleMidPoint(40, 40, 10);
   circleMidPoint(80, 40, 10);
   lineDDA(50, 40, 70, 40);
+  ellipseMidpoint(40, 40, 5, 3);
+  ellipseMidpoint(80, 40, 5, 3);
   s.draw(context);
 
   // requestAnimationFrame(dUpdate);
@@ -156,6 +158,67 @@ function circleMidPoint(xCenter, yCenter, radius) {
 
     s.lightPixel(xCenter - x, yCenter - y);
     s.lightPixel(xCenter - y, yCenter - x);
+  }
+}
+
+// Midpoint algorithm for drawing ellipses
+function ellipseMidpoint(xCenter, yCenter, rx, ry) {
+
+  let x, y, p, dpe, dps, dpse, d2pe, d2ps, d2pse;
+  let rx2 = pow(rx, 2),
+    ry2 = pow(ry, 2);
+
+  x = 0;
+  y = ry;
+  p = ry2 + (rx2 * (1 - 4 * ry) - 2) / 4;
+  dpe = 3 * ry2;
+  d2pe = 2 * ry2;
+  dpse = dpe - 2 * rx2 * (ry - 1);
+  d2pse = d2pe + 2 * rx2;
+
+  // Plot region one
+  ellipsePlotPoints(xCenter, yCenter, x, y);
+  while(dpse < (2 * rx2) + (3 * ry2)) {
+    if(p < 0) { // select E
+      p = p + dpe;
+      dpe = dpe + d2pe;
+    } else {
+      p = p + dpse;
+      dpe = dpe + d2pe;
+      dpse = dpse + d2pse;
+      y--;
+    }
+    x++;
+    ellipsePlotPoints(xCenter, yCenter, x, y);
+  }
+
+  // Plot region 2
+  // Initial values for region2
+  p = p - (rx2 * (4 * y - 3) + ry2 * (4 * x + 3) + 2) / 4;
+  dps = rx2 * (3 - 2 * y);
+  dpse = 2 * ry2 + 3 * rx2;
+  d2ps = 2 * rx2;
+
+  while(y > 0) {
+    if(p > 0) { // Select S
+      p += dpe;
+      dpe += d2ps;
+    } else { // Select SE
+      p += dpse;
+      dpe += d2ps;
+      dpse += d2pse;
+      x++;
+    }
+    y--;
+    ellipsePlotPoints(xCenter, yCenter, x, y);
+  }
+
+ 
+  function ellipsePlotPoints(xCenter, yCenter, x, y) {
+    s.lightPixel(xCenter + x, yCenter + y);
+    s.lightPixel(xCenter + x, yCenter - y);
+    s.lightPixel(xCenter - x, yCenter + y);
+    s.lightPixel(xCenter - x, yCenter - y);
   }
 }
 

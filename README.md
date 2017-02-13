@@ -3,3 +3,4 @@
 * Digital Differential Analyzer line drawing algorithm.
 * Bresenham's midpoint algorithm for drawing lines.
 * Bresenham's midpoint algorithm for drawing circles.
+* Midpoint algorithm for drawing ellipses.
